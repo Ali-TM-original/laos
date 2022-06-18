@@ -1,14 +1,17 @@
+mod lexer;
+mod tests;
+mod var;
+
+use std::collections::HashMap;
 use std::env;
 use std::fs::read_to_string;
 use crate::lexer::lex;
-mod lexer;
-mod tests;
-
+use crate::var::variableparser::Varparse;
 /*
-    1>. Control Tokens --> DOne
-    2>. create tokens for assigning memory location a value
-    3>. Create a hashmap of all memory variables
-    4>. Parse Variables and store in the hashmap
+    1>. Control Tokens --> Done
+    2>. create tokens for assigning memory location a value --> Done
+    3>. Create a hashmap of all memory variables --> Done
+    4>. Parse Variables and store in the hashmap --> Done
 
 
 */
@@ -18,6 +21,10 @@ fn main() {
     let file: String = env::args().nth(1).unwrap();
     let content:String = read_to_string(file).unwrap();
     let tokens:Vec<lex::Token> = lex::generatetokens(content.as_str());
-    println!("{:?}", tokens);
+
+    let res:HashMap<String, i64> = HashMap::new();
+    // No need for default acc and ix values only complicates things
+    let mut variables = Varparse::new(tokens, res);
+    variables.parse();
 
 }

@@ -1,0 +1,9 @@
+STARTPROG
+    VARIABLES
+        VAR ix 0
+        VAR acc 20
+
+        # comment
+        VAR position 20  
+    ENDVARIABLES
+ENDPROG

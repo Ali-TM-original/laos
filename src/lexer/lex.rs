@@ -1,5 +1,6 @@
 use std::panic;
-use logos::{Logos};
+use std::fmt;
+use logos::{Logos, Lexer};
 
 
 /* 
@@ -28,7 +29,7 @@ use logos::{Logos};
 pub fn generatetokens(source_code:&str)-> Vec<Token>{
     let mut tok:Vec<Token> = Token::lexer(source_code).collect();
     let last_token = tok.last().unwrap().clone();
-    println!("{:?}",tok);
+    //println!("{:?}",tok);
     if tok[0] != Token::Startprog && last_token != Token::Endprog{
         panic!("Please ensure you code start with STARTPROG and ends with ENDPROG")
     }
@@ -49,7 +50,17 @@ pub enum Token{
     #[token("ENDPROG")]
     Endprog,
 
-    
+    // Variable Tokens
+    #[token("VARIABLES")]
+    Startvariable,
+    #[token("ENDVARIABLES")]
+    Endvariables,
+    #[regex(r"[a-zA-Z_?]+", to_string)]
+    Identifier(String),
+    #[token("VAR")]
+    Var,
+    #[regex(r"([0-9]+[.])?[0-9]+", to_float)]
+    Number(i64),
 
     // End of file, tokens to skip and errors riht here
     Eof,
@@ -57,4 +68,29 @@ pub enum Token{
     #[regex(r"[ \r\t\n\f]+", logos::skip)]
     #[regex(r"#\s?(.*)", logos::skip)]
     Error
+}
+
+// Will be used primarily for better error messages sooner or later
+impl fmt::Display for Token {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use Token::*;
+        match self.clone() {
+            Startvariable=>write!(f, "Startvariable"),
+            Endvariables=>write!(f, "EndVariable"),
+            Startprog=>write!(f, "Startprog"),
+            Endprog=>write!(f, "Endprog"),
+            Identifier(v)=>v.fmt(f),
+            Var=>write!(f, "Var"),
+            Number(v)=>v.fmt(f),
+            _=>todo!()
+        }
+    }
+}
+
+fn to_string(lex:&mut Lexer<Token>)->Option<String>{
+    Some(lex.slice().to_string())
+}
+
+fn to_float(lex:&mut Lexer<Token>)->Option<i64>{
+    Some(lex.slice().parse().ok()?)
 }

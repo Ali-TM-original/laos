@@ -1,15 +1,13 @@
-use std::panic;
+use logos::{Lexer, Logos};
 use std::fmt;
-use logos::{Logos, Lexer};
 
+/*
 
-/* 
-
-    lets have a specific token at start and end of our code file like for example 
+    lets have a specific token at start and end of our code file like for example
 
 
     START
-        VARIABLES   
+        VARIABLES
             variable 1
             variable 2
         ENDVARIABLES
@@ -17,7 +15,7 @@ use logos::{Logos, Lexer};
     END
 
     basic goal is to create an makeshift interpreter for the assembly code given to students
-    in CAIE A-Level examinations. 
+    in CAIE A-Level examinations.
     This program specifically helps fill the table in assembly related questions
 
     At the end we need a way to draw the table out
@@ -26,24 +24,22 @@ use logos::{Logos, Lexer};
 */
 
 // It is always suppose to return a vector of tokens so no result expected
-pub fn generatetokens(source_code:&str)-> Vec<Token>{
-    let mut tok:Vec<Token> = Token::lexer(source_code).collect();
+pub fn generatetokens(source_code: &str) -> Vec<Token> {
+    let mut tok: Vec<Token> = Token::lexer(source_code).collect();
     let last_token = tok.last().unwrap().clone();
     //println!("{:?}",tok);
-    if tok[0] != Token::Startprog && last_token != Token::Endprog{
-        panic!("Please ensure you code start with STARTPROG and ends with ENDPROG")
-    }
+    assert!(
+        !(tok[0] != Token::Startprog && last_token != Token::Endprog),
+        "Please ensure you code start with STARTPROG and ends with ENDPROG"
+    );
     tok.remove(0); // remove Briyani kholo
-    tok.pop();  // removes end token 
+    tok.pop(); // removes end token
     tok
 }
 
-
 #[derive(Debug, Clone, Logos, PartialEq)]
 #[allow(dead_code)]
-pub enum Token{
-
-
+pub enum Token {
     // Without these two tokens progam won't be interpreted
     #[token("STARTPROG")]
     Startprog,
@@ -59,6 +55,8 @@ pub enum Token{
     Identifier(String),
     #[token("VAR")]
     Var,
+    #[token("POSITION")]
+    Position,
     #[regex(r"([0-9]+[.])?[0-9]+", to_float)]
     Number(i64),
 
@@ -67,30 +65,33 @@ pub enum Token{
     #[error]
     #[regex(r"[ \r\t\n\f]+", logos::skip)]
     #[regex(r"#\s?(.*)", logos::skip)]
-    Error
+    Error,
 }
 
 // Will be used primarily for better error messages sooner or later
 impl fmt::Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use Token::*;
+        use Token::{
+            Endprog, Endvariables, Identifier, Number, Position, Startprog, Startvariable, Var,
+        };
         match self.clone() {
-            Startvariable=>write!(f, "Startvariable"),
-            Endvariables=>write!(f, "EndVariable"),
-            Startprog=>write!(f, "Startprog"),
-            Endprog=>write!(f, "Endprog"),
-            Identifier(v)=>v.fmt(f),
-            Var=>write!(f, "Var"),
-            Number(v)=>v.fmt(f),
-            _=>todo!()
+            Startvariable => write!(f, "Startvariable"),
+            Endvariables => write!(f, "EndVariable"),
+            Startprog => write!(f, "Startprog"),
+            Endprog => write!(f, "Endprog"),
+            Identifier(v) => v.fmt(f),
+            Var => write!(f, "Var"),
+            Position => write!(f, "Position"),
+            Number(v) => v.fmt(f),
+            _ => todo!(),
         }
     }
 }
 
-fn to_string(lex:&mut Lexer<Token>)->Option<String>{
+fn to_string(lex: &mut Lexer<Token>) -> Option<String> {
     Some(lex.slice().to_string())
 }
 
-fn to_float(lex:&mut Lexer<Token>)->Option<i64>{
+fn to_float(lex: &mut Lexer<Token>) -> Option<i64> {
     Some(lex.slice().parse().ok()?)
 }

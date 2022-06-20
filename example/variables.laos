@@ -2,8 +2,8 @@ STARTPROG
     VARIABLES
         VAR ix 0
         VAR acc 20
-
         # comment
-        VAR position 20  
+        POSITION 200
+        POSITION 30 120
     ENDVARIABLES
 ENDPROG

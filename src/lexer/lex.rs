@@ -57,6 +57,8 @@ pub enum Token {
     Var,
     #[token("POSITION")]
     Position,
+    #[token("STARTLINE")]
+    Startline,
     #[regex(r"([0-9]+[.])?[0-9]+", to_float)]
     Number(i64),
 

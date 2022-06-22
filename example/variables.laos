@@ -5,5 +5,6 @@ STARTPROG
         # comment
         POSITION 200
         POSITION 30 120
+        STARTLINE 200
     ENDVARIABLES
 ENDPROG

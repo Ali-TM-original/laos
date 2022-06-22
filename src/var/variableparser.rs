@@ -38,35 +38,49 @@ impl Varparse {
         varparse
     }
     pub fn parse(&mut self) {
-        // for now we are not doing proper error handeling
-        // lets make this beautiful at the end
         pass_or_panic(&Token::Startvariable, &self.tokens[0].clone());
         self.tokens.remove(0);
-
-        // Now lets start looping right here
-
         self.eventloop();
         println!("{:?}", self.variables);
     }
     fn eventloop(&mut self) {
-        // tbh this is stupid fix this later
         while self.tokens[0] != Token::Endvariables {
             if self.tokens[0] == Token::Var {
                 self.getvariables();
             } else if self.tokens[0] == Token::Position {
                 self.getvariablepos();
+            }else if self.tokens[0] == Token::Startline{
+                self.startline()
             }
         }
     }
-    fn getvariablepos(&mut self) {
-        self.tokens.remove(0); // removes Position Token
-                               // next token is suppose to be Number which represents the memory location
+    fn startline(&mut self){
+        self.tokens.remove(0);
         let memloc = self.compare_identifiers(&Token::Number(0));
         if !memloc {
             panic!(
                 "{}",
                 format!(
-                    "Expected Token:Identifier Found TOken:{}",
+                    "Expected Token:Number Found TOken:{}",
+                    self.tokens[0].clone()
+                )
+                .as_str()
+            )
+        }
+        let position: i64 = self.get_value();
+        self.tokens.remove(0);
+        self.contains(&"StartingPos".to_string());
+        self.variables.insert("StartingPos".to_string(), position);
+    }
+    fn getvariablepos(&mut self) {
+        self.tokens.remove(0); // removes Position Token
+        // next token is suppose to be Number which represents the memory location
+        let memloc = self.compare_identifiers(&Token::Number(0));
+        if !memloc {
+            panic!(
+                "{}",
+                format!(
+                    "Expected Token:Number Found TOken:{}",
                     self.tokens[0].clone()
                 )
                 .as_str()
@@ -80,6 +94,7 @@ impl Varparse {
 
                                */
         let value_ = self.compare_identifiers(&Token::Number(0));
+        self.contains(&location.to_string());
         if value_ {
             let value: i64 = self.get_value();
             self.variables.insert(location.to_string(), value);
@@ -116,6 +131,7 @@ impl Varparse {
         }
 
         let num: i64 = self.get_value();
+        self.contains(&iden.to_string());
         self.variables.insert(iden, num);
         self.tokens.remove(0);
     }
@@ -137,6 +153,20 @@ impl Varparse {
         }
         num
     }
+    fn contains(&mut self, key:&String){
+        if self.variables.contains_key(key){
+            panic!(
+                "{}",
+                format!(
+                    "{} Variabe has already been declared cannot redeclare a variable",
+                    key
+                )
+                .as_str()
+            )
+        }
+
+    }
+
 }
 
 fn pass_or_panic(expected: &Token, got: &Token) {

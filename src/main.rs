@@ -25,5 +25,5 @@ fn main() {
     let res: HashMap<String, i64> = HashMap::new();
     // No need for default acc and ix values only complicates things
     let mut variables = Varparse::new(tokens, res);
-    variables.parse();
+    variables.parse(); // this will return all variables and the manipulated tokens 
 }

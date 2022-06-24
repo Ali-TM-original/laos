@@ -1,9 +1,11 @@
 mod lexer;
 mod tests;
 mod var;
+mod interpret;
 
 use crate::lexer::lex;
 use crate::var::variableparser::Varparse;
+use crate::interpret::interpreter::Intepreter;
 use std::collections::HashMap;
 use std::env;
 use std::fs::read_to_string;
@@ -25,5 +27,11 @@ fn main() {
     let res: HashMap<String, i64> = HashMap::new();
     // No need for default acc and ix values only complicates things
     let mut variables = Varparse::new(tokens, res);
-    variables.parse(); // this will return all variables and the manipulated tokens 
+    let (var, tok) = variables.parse(); // this will return all variables and the manipulated tokens 
+    
+    println!("{:?}\n \n", var);
+    println!("{:?}", tok);
+    
+    Intepreter::new(tok, var.get("StartingPos").unwrap().clone(), var);
+
 }

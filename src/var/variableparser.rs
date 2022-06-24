@@ -37,11 +37,12 @@ impl Varparse {
         let varparse = Varparse { tokens, variables };
         varparse
     }
-    pub fn parse(&mut self) {
+    pub fn parse(&mut self)-> (HashMap<String, i64>, Vec<Token>) {
         pass_or_panic(&Token::Startvariable, &self.tokens[0].clone());
         self.tokens.remove(0);
         self.eventloop();
-        println!("{:?}", self.variables);
+        self.tokens.remove(0); // remove the EndVAriabl token
+        (self.variables.to_owned(), self.tokens.to_owned())
     }
     fn eventloop(&mut self) {
         while self.tokens[0] != Token::Endvariables {
@@ -136,7 +137,6 @@ impl Varparse {
         self.tokens.remove(0);
     }
     fn compare_identifiers(&self, token: &Token) -> bool {
-        //println!("Compare This {} To This {}", self.tokens[self.pc], token);
         std::mem::discriminant(&self.tokens[0]) == std::mem::discriminant(token)
     }
     fn get_identifier(&mut self) -> Identifier {

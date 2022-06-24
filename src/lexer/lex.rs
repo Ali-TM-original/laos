@@ -27,13 +27,11 @@ use std::fmt;
 pub fn generatetokens(source_code: &str) -> Vec<Token> {
     let mut tok: Vec<Token> = Token::lexer(source_code).collect();
     let last_token = tok.last().unwrap().clone();
-    //println!("{:?}",tok);
     assert!(
         !(tok[0] != Token::Startprog && last_token != Token::Endprog),
         "Please ensure you code start with STARTPROG and ends with ENDPROG"
     );
-    tok.remove(0); // remove Briyani kholo
-    tok.pop(); // removes end token
+    tok.remove(0);
     tok
 }
 
@@ -61,6 +59,42 @@ pub enum Token {
     Startline,
     #[regex(r"([0-9]+[.])?[0-9]+", to_float)]
     Number(i64),
+
+    // Main Code Tokens
+    #[token("LDM")]
+    Ldm,
+    #[token("LDD")]
+    Ldd,
+    #[token("LDI")]
+    Ldi,
+    #[token("LDX")]
+    Ldx,
+    #[token("LDR")]
+    Ldr,
+    #[token("MOV")]
+    Mov,
+    #[token("STO")]
+    Sto,
+    #[token("ADD")]
+    Add,
+    #[token("INC")]
+    Inc,
+    #[token("CMP")]
+    Cmp,
+    #[token("JPE")]
+    Jpe,
+    #[token("JPN")]
+    Jpn,
+    #[token("JMP")]
+    Jmp,
+    #[token("OUT")]
+    Out,
+    #[token("LSL")]
+    Lsl,
+    #[token("LSR")]
+    Lsr,
+    #[token("END")]
+    End,
 
     // End of file, tokens to skip and errors riht here
     Eof,

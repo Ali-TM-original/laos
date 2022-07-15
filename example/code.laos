@@ -12,7 +12,7 @@ STARTPROG
     LDD 365
     CMP 366
     JPE 209
-    INC ACC
+    INC 365
     STO 365
     MOV IX
     LDX 365

@@ -1,29 +1,6 @@
 use logos::{Lexer, Logos};
 use std::fmt;
 
-/*
-
-    lets have a specific token at start and end of our code file like for example
-
-
-    START
-        VARIABLES
-            variable 1
-            variable 2
-        ENDVARIABLES
-        ALL OTHER ASM CODE
-    END
-
-    basic goal is to create an makeshift interpreter for the assembly code given to students
-    in CAIE A-Level examinations.
-    This program specifically helps fill the table in assembly related questions
-
-    At the end we need a way to draw the table out
-
-
-*/
-
-// It is always suppose to return a vector of tokens so no result expected
 pub fn generatetokens(source_code: &str) -> Vec<Token> {
     let mut tok: Vec<Token> = Token::lexer(source_code).collect();
     let last_token = tok.last().unwrap().clone();
@@ -38,7 +15,6 @@ pub fn generatetokens(source_code: &str) -> Vec<Token> {
 #[derive(Debug, Clone, Logos, PartialEq)]
 #[allow(dead_code)]
 pub enum Token {
-    // Without these two tokens progam won't be interpreted
     #[token("STARTPROG")]
     Startprog,
     #[token("ENDPROG")]
@@ -108,7 +84,7 @@ pub enum Token {
 impl fmt::Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         use Token::{
-            Endprog, Endvariables, Identifier, Number, Position, Startprog, Startvariable, Var,
+            Endprog, Endvariables, Identifier, Number, Position, Startprog, Startvariable, Var,Inc
         };
         match self.clone() {
             Startvariable => write!(f, "Startvariable"),
@@ -118,6 +94,7 @@ impl fmt::Display for Token {
             Identifier(v) => v.fmt(f),
             Var => write!(f, "Var"),
             Position => write!(f, "Position"),
+            Inc=> write!(f, "Inc"),
             Number(v) => v.fmt(f),
             _ => todo!(),
         }

@@ -6,6 +6,7 @@
 </h3>
 
 ### Status ⇒ development
+### Current Code Quality ⇒ bad 
 
 
 ## Example code
